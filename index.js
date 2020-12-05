@@ -16,15 +16,17 @@ mongoose.connect(connectionstring, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
 });
+//app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
     const fetchdata = await model.find();
-    console.log(fetchdata);
     const user = fetchdata.find(
       (user) => user.username === username && user.password === password
     );
+    //console.log(user.username);
     if (!user) throw new Error("Invalid user");
     const accessToken = CreateAccessToken(user._id);
     res.send({ accessToken: accessToken });
