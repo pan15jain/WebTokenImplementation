@@ -17,7 +17,7 @@ mongoose.connect(connectionstring, {
   useNewUrlParser: true,
 });
 app.use(bodyparser.json());
-app.get("/login", async (req, res) => {
+app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
     const fetchdata = await model.find();
