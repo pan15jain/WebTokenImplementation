@@ -6,7 +6,8 @@ const isAuth = require("./isAuth");
 router.get("/", async (req, res) => {
   try {
     const cases = await model.find();
-    res.json(cases);
+    //console.log(cases);
+    res.json({ CasesRecord: cases });
   } catch (error) {
     res.json({ message: error });
   }
@@ -20,6 +21,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 router.post("/", async (req, res) => {
+  //console.log(req.body);
   const casemodel = new model({
     id: req.body.id,
     fileNo: req.body.fileNo,
@@ -36,6 +38,7 @@ router.post("/", async (req, res) => {
   });
   try {
     const dataSaved = await casemodel.save();
+    //console.log(dataSaved);
     res.json(dataSaved);
   } catch (err) {
     res.json({ message: err });
@@ -50,8 +53,9 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.patch("/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
+    console.log(req.params.id);
     const record = await model.findByIdAndUpdate(
       { _id: req.params.id },
       {

@@ -7,6 +7,7 @@ const users = require("./routes/users");
 const mongoose = require("mongoose");
 const model = require("./models/Users");
 const app = express();
+const cors = require("cors");
 require("dotenv").config();
 const isAuth = require("./routes/isAuth");
 const { verify } = require("jsonwebtoken");
@@ -16,9 +17,15 @@ mongoose.connect(connectionstring, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
 });
+app.use(cors());
 //app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
+app.get("/initialToken", async (req, res) => {
+  //console.log(req.query.id);
+  const accessToken = await CreateAccessToken(req.query.id);
+  res.json({ accessToken: accessToken });
+});
 app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -26,23 +33,25 @@ app.post("/login", async (req, res) => {
     const user = fetchdata.find(
       (user) => user.username === username && user.password === password
     );
-    //console.log(user.username);
-    if (!user) throw new Error("Invalid user");
+    console.log(user === undefined);
+    if (user === undefined) throw new Error("Invalid user");
     const accessToken = CreateAccessToken(user._id);
-    res.send({ accessToken: accessToken });
+    res.json({ accessToken: accessToken });
   } catch (err) {
+    console.log(err);
     res.json({ message: err });
   }
 });
 app.use("/Users", users);
 app.use(function (req, res, next) {
-  console.log(req.headers.authorization);
+  //console.log(req.headers.authorization);
   if (!req.headers.authorization) {
     return res.status(403).json({ error: "No credentials sent!" });
   }
   const token = req.headers.authorization.split(" ")[1];
   const userid = verify(token, process.env.ACCESS_TOKEN_SECRET);
   if (!userid) throw Error("you need to log in");
+  //console.log(userid);
   next();
 });
 app.use("/Cases", cases);
