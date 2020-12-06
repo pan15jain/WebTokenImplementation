@@ -4,6 +4,7 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
+    console.log("hello");
     const fetchdata = await model.find();
     res.json(fetchdata);
   } catch (err) {
@@ -11,9 +12,11 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:caseid", async (req, res) => {
   try {
-    const fetchdata = await model.findById(req.params.id);
+    console.log(req.params.caseid);
+    const fetchdata = await model.find({ caseId: req.params.caseid });
+    console.log(fetchdata);
     res.json(fetchdata);
   } catch (err) {
     res.json({ message: err });

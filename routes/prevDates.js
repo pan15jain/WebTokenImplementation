@@ -10,10 +10,10 @@ router.get("/", async (req, res) => {
     res.json({ msg: err });
   }
 });
-router.get("/:id", async (req, res) => {
+router.get("/:caseid", async (req, res) => {
   try {
-    const data = await model.findById({ _id: req.params.id });
-    res.json(data);
+    const data = await model.find({ caseId: req.params.caseid });
+    res.json({ dateRecord: data });
   } catch (err) {
     res.json({ msg: err });
   }
