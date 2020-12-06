@@ -16,8 +16,8 @@ router.get("/:caseid", async (req, res) => {
   try {
     console.log(req.params.caseid);
     const fetchdata = await model.find({ caseId: req.params.caseid });
-    console.log(fetchdata);
-    res.json(fetchdata);
+    //console.log(fetchdata);
+    res.json({dateRecord:fetchdata});
   } catch (err) {
     res.json({ message: err });
   }
