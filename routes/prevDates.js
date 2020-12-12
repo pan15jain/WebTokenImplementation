@@ -12,6 +12,8 @@ router.get("/", async (req, res) => {
 });
 router.get("/:caseid", async (req, res) => {
   try {
+    console.log("hello");
+    console.log(req.params.caseid);
     const data = await model.find({ caseId: req.params.caseid });
     res.json({ dateRecord: data });
   } catch (err) {
@@ -20,7 +22,7 @@ router.get("/:caseid", async (req, res) => {
 });
 router.post("/", async (req, res) => {
   const Model = new model({
-    caseid: req.body.caseid,
+    caseId: req.body.caseid,
     previousDate: req.body.previousDate,
     purpose: req.body.purpose,
   });
@@ -45,7 +47,7 @@ router.patch("/:id", async (req, res) => {
       { _id: req.params.id },
       {
         $set: {
-          caseid: req.body.caseid,
+          caseId: req.body.caseid,
           previousDate: req.body.previousDate,
           purpose: req.body.purpose,
         },

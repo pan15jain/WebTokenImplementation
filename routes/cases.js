@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const model = require("../models/Cases");
+const prevDatemodel = require("../models/PrevDates");
+const remarkmodel = require("../models/Remarks");
 const isAuth = require("./isAuth");
 
 router.get("/", async (req, res) => {
@@ -46,6 +48,11 @@ router.post("/", async (req, res) => {
 });
 router.delete("/:id", async (req, res) => {
   try {
+    console.log(req.params.id);
+    await prevDatemodel.findOneAndDelete({
+      caseId: req.params.id,
+    });
+    await remarkmodel.findOneAndDelete({ caseId: req.params.id });
     const deletedRecord = await model.findOneAndDelete({ _id: req.params.id });
     res.json(deletedRecord);
   } catch (err) {
@@ -55,7 +62,6 @@ router.delete("/:id", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   try {
-    console.log(req.params.id);
     const record = await model.findByIdAndUpdate(
       { _id: req.params.id },
       {
@@ -69,12 +75,22 @@ router.put("/:id", async (req, res) => {
           distt: req.body.distt,
           phone: req.body.phone,
           previousDate: req.body.previousDate,
-          previousPurpose: req.body.previousPurpose,
+          previousPurpose: req.body.previousPurp,
           nextDate: req.body.nextDate,
           nextPurpose: req.body.nextPurpose,
         },
       }
     );
+    console.log(req.body);
+    if (req.body.previousDate && req.body.previousDate != req.body.nextDate) {
+      const prevmodel = new prevDatemodel({
+        caseId: req.params.id,
+        previousDate: req.body.previousDate,
+        purpose: req.body.previousPurp,
+      });
+      console.log(prevmodel);
+      const saveddata = await prevmodel.save();
+    }
     res.json(record);
   } catch (err) {
     res.json({ message: err });

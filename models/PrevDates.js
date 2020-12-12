@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const prevdateSchema = mongoose.Schema({
-  caseid: String,
+  caseId: String,
   previousDate: Date,
   purpose: String,
 });
