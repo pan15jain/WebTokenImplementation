@@ -15,9 +15,9 @@ router.get("/", async (req, res) => {
 router.get("/:caseid", async (req, res) => {
   try {
     console.log(req.params.caseid);
-    const fetchdata = await model.find({ caseId: req.params.caseid });
+    const fetchdata = await model.find({ caseid: req.params.caseid });
     //console.log(fetchdata);
-    res.json({dateRecord:fetchdata});
+    res.json({ dateRecord: fetchdata });
   } catch (err) {
     res.json({ message: err });
   }
@@ -25,7 +25,7 @@ router.get("/:caseid", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const remarkModel = new model({
-    caseId: req.body.caseId,
+    caseid: req.body.caseId,
     remarkDate: req.body.remarkDate,
     note: req.body.note,
   });
@@ -43,7 +43,7 @@ router.patch("/:id", async (req, res) => {
       { _id: req.params.id },
       {
         $set: {
-          caseId: req.body.caseId,
+          caseid: req.body.caseId,
           remarkDate: req.body.remarkDate,
           note: req.body.note,
         },

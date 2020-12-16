@@ -22,7 +22,7 @@ router.get("/:caseid", async (req, res) => {
 });
 router.post("/", async (req, res) => {
   const Model = new model({
-    caseId: req.body.caseid,
+    caseid: req.body.caseid,
     previousDate: req.body.previousDate,
     purpose: req.body.purpose,
   });
@@ -47,7 +47,7 @@ router.patch("/:id", async (req, res) => {
       { _id: req.params.id },
       {
         $set: {
-          caseId: req.body.caseid,
+          caseid: req.body.caseid,
           previousDate: req.body.previousDate,
           purpose: req.body.purpose,
         },
