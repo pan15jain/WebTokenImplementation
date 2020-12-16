@@ -1,6 +1,7 @@
 const express = require("express");
 const model = require("../models/Remarks");
 const router = express.Router();
+var ObjectId = require("mongodb").ObjectId;
 
 router.get("/", async (req, res) => {
   try {
@@ -15,7 +16,7 @@ router.get("/", async (req, res) => {
 router.get("/:caseid", async (req, res) => {
   try {
     console.log(req.params.caseid);
-    const fetchdata = await model.find({ caseid: req.params.caseid });
+    const fetchdata = await model.find({ caseid: ObjectId(req.params.caseid) });
     //console.log(fetchdata);
     res.json({ dateRecord: fetchdata });
   } catch (err) {

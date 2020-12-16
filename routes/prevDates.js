@@ -1,6 +1,7 @@
 const model = require("../models/PrevDates");
 const express = require("express");
 const router = express.Router();
+var ObjectId = require("mongodb").ObjectId;
 
 router.get("/", async (req, res) => {
   try {
@@ -14,7 +15,7 @@ router.get("/:caseid", async (req, res) => {
   try {
     console.log("hello");
     console.log(req.params.caseid);
-    const data = await model.find({ caseId: req.params.caseid });
+    const data = await model.find({ caseid: ObjectId(req.params.caseid) });
     res.json({ dateRecord: data });
   } catch (err) {
     res.json({ msg: err });
