@@ -7,7 +7,7 @@ const isAuth = require("./isAuth");
 
 router.get("/", async (req, res) => {
   try {
-    const cases = await model.find();
+const cases = await model.find();    
     //console.log(cases);
     res.json({ CasesRecord: cases });
   } catch (error) {

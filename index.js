@@ -3,6 +3,7 @@ const bodyparser = require("body-parser");
 const prevDate = require("./routes/prevDates");
 const cases = require("./routes/cases");
 const remarks = require("./routes/remarks");
+const todo = require("./routes/todos");
 const users = require("./routes/users");
 const mongoose = require("mongoose");
 const model = require("./models/Users");
@@ -57,6 +58,7 @@ app.use(function (req, res, next) {
 app.use("/Cases", cases);
 app.use("/PrevDates", prevDate);
 app.use("/Remarks", remarks);
+app.use("/Todo", todo);
 app.listen(process.env.PORT, () =>
   console.log(`listening at port ${process.env.PORT}`)
 );
