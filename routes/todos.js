@@ -31,19 +31,18 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
+  console.log(req.params.id);
   try {
-    const record = await todo.findByIdAndUpdate(
-      { _id: req.params.id },
-      {
-        $set: {
-          title: req.body.title,
-          description: req.body.description,
-          status: req.body.status,
-          duedate: req.body.duedate,
-          comdate: req.body.status === "C" ? new Date() : "",
-        },
-      }
-    );
+    const record = await model.findByIdAndUpdate(req.params.id, {
+      $set: {
+        title: req.body.title,
+        description: req.body.description,
+        status: req.body.status,
+        duedate: req.body.duedate,
+        comdate: req.body.status === "C" ? new Date() : "",
+      },
+    });
+    res.json(record);
   } catch (err) {
     res.json({ message: err });
   }
@@ -51,7 +50,7 @@ router.put("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   try {
-    const recordDeleted = await todo.findByIdAndDelete(req.params.id);
+    const recordDeleted = await model.findByIdAndDelete(req.params.id);
     res.json(recordDeleted);
   } catch (err) {
     res.json({ message: err });
