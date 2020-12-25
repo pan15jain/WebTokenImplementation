@@ -19,7 +19,9 @@ router.post("/", async (req, res) => {
   savemodel.description = req.body.description;
   savemodel.status = req.body.status;
   savemodel.duedate = req.body.duedate;
-  savemodel.comdate = req.body.comdate;
+  if (req.body.status === "C") {
+    savemodel.comdate = new Date();
+  }
   try {
     const dataSaved = savemodel.save();
     res.json(dataSaved);
@@ -38,7 +40,7 @@ router.put("/:id", async (req, res) => {
           description: req.body.description,
           status: req.body.status,
           duedate: req.body.duedate,
-          comdate: req.body.comdate,
+          comdate: req.body.status === "C" ? new Date() : "",
         },
       }
     );
