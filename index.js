@@ -19,11 +19,9 @@ mongoose.connect(connectionstring, {
   useNewUrlParser: true,
 });
 app.use(cors());
-//app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
-app.get("/initialToken", async (req, res) => {
-  //console.log(req.query.id);
+app.get("/initialToken", async (req, res) => { 
   const accessToken = await CreateAccessToken(req.query.id);
   res.json({ accessToken: accessToken });
 });
