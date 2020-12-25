@@ -44,15 +44,13 @@ app.post("/login", async (req, res) => {
   }
 });
 app.use("/Users", users);
-app.use(function (req, res, next) {
-  //console.log(req.headers.authorization);
+app.use(function (req, res, next) {  
   if (!req.headers.authorization) {
     return res.status(403).json({ error: "No credentials sent!" });
   }
   const token = req.headers.authorization.split(" ")[1];
   const userid = verify(token, process.env.ACCESS_TOKEN_SECRET);
-  if (!userid) throw Error("you need to log in");
-  //console.log(userid);
+  if (!userid) return res.status(403).json({ error: "token Expired!" });  
   next();
 });
 app.use("/Cases", cases);
