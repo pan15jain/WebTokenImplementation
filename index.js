@@ -21,7 +21,7 @@ mongoose.connect(connectionstring, {
 app.use(cors());
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
-app.get("/initialToken", async (req, res) => { 
+app.get("/initialToken", async (req, res) => {
   const accessToken = await CreateAccessToken(req.query.id);
   res.json({ accessToken: accessToken });
 });
@@ -42,13 +42,21 @@ app.post("/login", async (req, res) => {
   }
 });
 app.use("/Users", users);
-app.use(function (req, res, next) {  
+app.use(function (req, res, next) {
   if (!req.headers.authorization) {
     return res.status(403).json({ error: "No credentials sent!" });
   }
   const token = req.headers.authorization.split(" ")[1];
-  const userid = verify(token, process.env.ACCESS_TOKEN_SECRET);
-  if (!userid) return res.status(403).json({ error: "token Expired!" });  
+  if (!token) return res.status(403).json({ error: "token not defined" });
+  //const userid = verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+  verify(token, process.env.ACCESS_TOKEN_SECRET, "", (jsonerr, data) => {
+    if (jsonerr) {
+      return res
+        .status(403)
+        .json({ error: jsonerr.name, description: jsonerr.message });
+    }
+  });
   next();
 });
 app.use("/Cases", cases);
