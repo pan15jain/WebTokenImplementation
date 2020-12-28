@@ -5,6 +5,7 @@ const cases = require("./routes/cases");
 const remarks = require("./routes/remarks");
 const todo = require("./routes/todos");
 const users = require("./routes/users");
+const casemodel = require("./models/Cases");
 const mongoose = require("mongoose");
 const model = require("./models/Users");
 const app = express();
@@ -63,6 +64,141 @@ app.use("/Cases", cases);
 app.use("/PrevDates", prevDate);
 app.use("/Remarks", remarks);
 app.use("/Todo", todo);
+
+app.get("/GetDashboard", (req, res) => {
+  var dashboard = {
+    monthNames: [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "June",
+      "July",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ],
+    pieChart: {
+      labels: [],
+      datasets: [],
+    },
+    barChart: {
+      labels: [],
+      datasets: [],
+    },
+    todaysCases: 0,
+  };
+
+  var data = [];
+  let promise1 = new Promise((resolve, reject) => {
+    casemodel
+      .aggregate([
+        {
+          $match: {
+            nextDate: { $gte: new Date() },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              year: {
+                $year: "$nextDate",
+              },
+              month: {
+                $month: "$nextDate",
+              },
+            },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $sort: {
+            "_id.year": 1,
+            "_id.month": 1,
+          },
+        },
+        {
+          $limit: 6,
+        },
+      ])
+      .then((result) => {
+        result.map((prop, key) => {
+          dashboard.barChart.labels.push(
+            dashboard.monthNames[prop._id.month - 1]
+          );
+          dashboard.barChart.datasets.push(prop.count);
+        });
+        resolve();
+      });
+  });
+  promise1.catch(function (err) {
+    throw err;
+  });
+
+  let promise2 = new Promise((resolve, reject) => {
+    casemodel
+      .aggregate([
+        {
+          $match: {
+            nextDate: { $lte: new Date() },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              year: {
+                $year: "$nextDate",
+              },
+              month: {
+                $month: "$nextDate",
+              },
+            },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $sort: {
+            "_id.year": -1,
+            "_id.month": -1,
+          },
+        },
+        {
+          $limit: 6,
+        },
+      ])
+      .then((result) => {
+        result.map((prop, key) => {
+          dashboard.pieChart.labels.push(
+            dashboard.monthNames[prop._id.month - 1]
+          );
+          dashboard.pieChart.datasets.push(prop.count);
+        });
+        resolve();
+      });
+  });
+  promise2.catch(function (err) {
+    throw err;
+  });
+  let promise3 = new Promise((resolve, reject) => {
+    casemodel
+      .find({ nextDate: new Date() })
+      .count()
+      .then(function (numItems) {
+        dashboard.todaysCases = numItems;
+        resolve();
+      });
+  });
+  promise3.catch(function (err) {
+    throw err;
+  });
+
+  Promise.all([promise1, promise2, promise3]).then((result) => {
+    res.send({ CasesRecord: dashboard });
+  });
+});
 app.listen(process.env.PORT, () =>
   console.log(`listening at port ${process.env.PORT}`)
 );
