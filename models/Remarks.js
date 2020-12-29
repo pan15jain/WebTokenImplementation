@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
+var ObjectId = require("mongodb").ObjectId;
 
 const remarkSchema = mongoose.Schema({
-  caseId: String,
+  caseid: ObjectId,
   remarkDate: Date,
   note: String,
 });

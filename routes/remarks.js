@@ -25,6 +25,7 @@ router.get("/:caseid", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
+  console.log(req.body);
   const remarkModel = new model({
     caseid: req.body.caseId,
     remarkDate: req.body.remarkDate,
@@ -32,6 +33,7 @@ router.post("/", async (req, res) => {
   });
   try {
     const savedDate = await remarkModel.save();
+    console.log(savedDate);
     res.json(savedDate);
   } catch (err) {
     res.json({ message: err });
