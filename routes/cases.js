@@ -84,7 +84,7 @@ router.put("/:id", async (req, res) => {
     console.log(req.body);
     if (req.body.previousDate && req.body.previousDate != req.body.nextDate) {
       const prevmodel = new prevDatemodel({
-        caseId: req.params.id,
+        caseid: req.params.id,
         previousDate: req.body.previousDate,
         purpose: req.body.previousPurp,
       });
