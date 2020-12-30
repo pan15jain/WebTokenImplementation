@@ -14,6 +14,7 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
+  console.log(req.body);
   const savemodel = new model();
   savemodel.title = req.body.title;
   savemodel.description = req.body.description;
@@ -23,7 +24,8 @@ router.post("/", async (req, res) => {
     savemodel.comdate = new Date();
   }
   try {
-    const dataSaved = savemodel.save();
+    const dataSaved = await savemodel.save();
+    console.log(dataSaved);
     res.json(dataSaved);
   } catch (err) {
     res.json({ message: err });
