@@ -90,6 +90,11 @@ app.get("/GetDashboard", (req, res) => {
       datasets: [],
     },
     todaysCases: 0,
+    totalCases: 0,
+  };
+  var dashboard1 = {
+    todoData: {},
+    todaysTodo: 0,
   };
 
   var data = [];
@@ -183,8 +188,11 @@ app.get("/GetDashboard", (req, res) => {
     throw err;
   });
   let promise3 = new Promise((resolve, reject) => {
+    var date = new Date();
+    date =
+      date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
     casemodel
-      .find({ nextDate: new Date() })
+      .find({ nextDate: new Date(date) })
       .count()
       .then(function (numItems) {
         dashboard.todaysCases = numItems;
@@ -194,9 +202,78 @@ app.get("/GetDashboard", (req, res) => {
   promise3.catch(function (err) {
     throw err;
   });
+  let promise4 = new Promise((resolve, reject) => {
+    var date = new Date();
+    date =
+      date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+    todo
+      .find({ duedate: new Date(date) })
+      .count()
+      .then(function (numItems) {
+        dashboard1.todaysTodo = numItems;
+        resolve();
+      });
+    console.log(new Date(date));
+  });
 
-  Promise.all([promise1, promise2, promise3]).then((result) => {
-    res.send({ CasesRecord: dashboard });
+  let promise5 = new Promise((resolve, reject) => {
+    casemodel
+      .find()
+      .count()
+      .then(function (numItems) {
+        dashboard.totalCases = numItems;
+        resolve();
+      });
+  });
+  //Promise for upcoming todos
+  let promise6 = new Promise((resolve, reject) => {
+    var date = new Date();
+    date =
+      date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+
+    var datelimit = new Date();
+    datelimit.setDate(datelimit.getDate() + 5);
+
+    // var datelimit = new Date();
+    datelimit =
+      datelimit.getFullYear() +
+      "-" +
+      (datelimit.getMonth() + 1) +
+      "-" +
+      datelimit.getDate();
+
+    todo
+
+      .aggregate([
+        {
+          $match: {
+            duedate: { $gte: new Date(date), $lte: new Date(datelimit) },
+          },
+        },
+
+        {
+          $sort: {
+            duedate: 1,
+          },
+        },
+      ])
+      .toArray(function (err, result) {
+        if (err) throw err;
+
+        dashboard1.todoData = result;
+
+        resolve();
+      });
+  });
+  Promise.all([
+    promise1,
+    promise2,
+    promise3,
+    promise4,
+    promise5,
+    promise6,
+  ]).then((result) => {
+    res.send({ CasesRecord: dashboard, TodoDetails: dashboard1 });
   });
 });
 app.listen(process.env.PORT, () =>
