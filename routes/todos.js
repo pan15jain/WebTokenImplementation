@@ -22,6 +22,8 @@ router.post("/", async (req, res) => {
   savemodel.duedate = req.body.duedate;
   if (req.body.status === "C") {
     savemodel.comdate = new Date();
+  } else {
+    savemodel.comdate = null;
   }
   try {
     const dataSaved = await savemodel.save();

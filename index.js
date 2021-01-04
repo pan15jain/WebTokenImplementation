@@ -207,7 +207,7 @@ app.get("/GetDashboard", (req, res) => {
     date =
       date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
     todo
-      .find({ duedate: new Date(date) })
+     .find({ duedate: new Date(date) })
       .count()
       .then(function (numItems) {
         dashboard1.todaysTodo = numItems;
@@ -241,16 +241,13 @@ app.get("/GetDashboard", (req, res) => {
       (datelimit.getMonth() + 1) +
       "-" +
       datelimit.getDate();
-
     todo
-
       .aggregate([
         {
           $match: {
             duedate: { $gte: new Date(date), $lte: new Date(datelimit) },
           },
         },
-
         {
           $sort: {
             duedate: 1,
@@ -259,7 +256,6 @@ app.get("/GetDashboard", (req, res) => {
       ])
       .toArray(function (err, result) {
         if (err) throw err;
-
         dashboard1.todoData = result;
 
         resolve();
@@ -273,6 +269,8 @@ app.get("/GetDashboard", (req, res) => {
     promise5,
     promise6,
   ]).then((result) => {
+    console.log(dashboard);
+    console.log(dashboard1);
     res.send({ CasesRecord: dashboard, TodoDetails: dashboard1 });
   });
 });
