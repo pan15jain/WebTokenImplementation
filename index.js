@@ -14,6 +14,7 @@ require("dotenv").config();
 const isAuth = require("./routes/isAuth");
 const { verify } = require("jsonwebtoken");
 const { CreateAccessToken } = require("./token");
+const TodosModels = require("./models/Todos");
 const connectionstring = process.env.CONNECT_STRING;
 mongoose.connect(connectionstring, {
   useUnifiedTopology: true,
@@ -206,8 +207,7 @@ app.get("/GetDashboard", (req, res) => {
     var date = new Date();
     date =
       date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-    todo
-     .find({ duedate: new Date(date) })
+    TodosModels.find({ duedate: new Date(date) })
       .count()
       .then(function (numItems) {
         dashboard1.todaysTodo = numItems;
@@ -241,25 +241,34 @@ app.get("/GetDashboard", (req, res) => {
       (datelimit.getMonth() + 1) +
       "-" +
       datelimit.getDate();
-    todo
-      .aggregate([
-        {
-          $match: {
-            duedate: { $gte: new Date(date), $lte: new Date(datelimit) },
-          },
-        },
-        {
-          $sort: {
-            duedate: 1,
-          },
-        },
-      ])
-      .toArray(function (err, result) {
-        if (err) throw err;
-        dashboard1.todoData = result;
 
-        resolve();
-      });
+    TodosModels.aggregate([
+      {
+        $match: {
+          duedate: { $gte: new Date(date), $lte: new Date(datelimit) },
+        },
+      },
+
+      {
+        $sort: {
+          duedate: 1,
+        },
+      },
+    ]).then((result) => {
+      // if (err) throw err;
+      dashboard1.todoData = result;
+      resolve();
+    });
+
+    // .then((result) => {
+    //   result.map((prop, key) => {
+    //     dashboard.barChart.labels.push(
+    //       dashboard.monthNames[prop._id.month - 1]
+    //     );
+    //     dashboard.barChart.datasets.push(prop.count);
+    //   });
+    //   resolve();
+    // });
   });
   Promise.all([
     promise1,

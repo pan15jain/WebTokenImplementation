@@ -8,4 +8,4 @@ const TodosSchema = mongoose.Schema({
   comdate: Date,
 });
 
-module.exports = mongoose.model("todo", TodosSchema);
+module.exports = mongoose.model("todos", TodosSchema);
