@@ -279,6 +279,8 @@ app.get("/GetDashboard", (req, res) => {
     promise5,
     promise6,
   ]).then((result) => {
+    console.log(dashboard);
+    console.log(dashboard1);
     res.send({ CasesRecord: dashboard, TodoDetails: dashboard1 });
   });
 });
