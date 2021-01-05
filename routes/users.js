@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 var admin = require("firebase-admin");
-var serviceAccount = require("./ezassociatesbkp-firebase-adminsdk-eq35h-f062131c98.json");
+var serviceAccount = require("../ezassociatesbkp-firebase-adminsdk-eq35h-f062131c98.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -10,30 +10,23 @@ admin.initializeApp({
 });
 
 router.get("/", async (req, res) => {
-  try {
-    admin
-      .auth()
-      .listUsers(1000)
-      .then(function (result) {
-        var userList = new Array();
-        result.users.forEach((userRecord) => {
-          userList.push({
-            Login: userRecord.email,
-            Name:
-              userRecord.displayName !== undefined
-                ? userRecord.displayName
-                : "",
-            Email: userRecord.email,
-            Password: "",
-            Uid: userRecord.uid,
-          });
+  admin
+    .auth()
+    .listUsers(1000)
+    .then(function (result) {
+      var userList = new Array();
+      result.users.forEach((userRecord) => {
+        userList.push({
+          Login: userRecord.email,
+          Name:
+            userRecord.displayName !== undefined ? userRecord.displayName : "",
+          Email: userRecord.email,
+          Password: "",
+          Uid: userRecord.uid,
         });
-
-        res.send({ express: userList });
       });
-  } catch (err) {
-    res.json({ message: err });
-  }
+      res.send({ UserRecords: userList });
+    });
 });
 
 router.get("/:id", async (req, res) => {
