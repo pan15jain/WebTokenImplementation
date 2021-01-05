@@ -43,7 +43,7 @@ app.post("/login", async (req, res) => {
     res.json({ message: err });
   }
 });
-app.use("/Users", users);
+
 app.use(function (req, res, next) {
   if (!req.headers.authorization) {
     return res.status(403).json({ error: "No credentials sent!" });
@@ -61,6 +61,7 @@ app.use(function (req, res, next) {
   });
   next();
 });
+app.use("/Users", users);
 app.use("/Cases", cases);
 app.use("/PrevDates", prevDate);
 app.use("/Remarks", remarks);

@@ -1,12 +1,36 @@
 const express = require("express");
-const model = require("../models/Users");
-const { CreateAccessToken } = require("../token");
 const router = express.Router();
+
+var admin = require("firebase-admin");
+var serviceAccount = require("./ezassociatesbkp-firebase-adminsdk-eq35h-f062131c98.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://ezassociatesbkp.firebaseio.com",
+});
 
 router.get("/", async (req, res) => {
   try {
-    const fetchdata = await model.find();
-    res.json(fetchdata);
+    admin
+      .auth()
+      .listUsers(1000)
+      .then(function (result) {
+        var userList = new Array();
+        result.users.forEach((userRecord) => {
+          userList.push({
+            Login: userRecord.email,
+            Name:
+              userRecord.displayName !== undefined
+                ? userRecord.displayName
+                : "",
+            Email: userRecord.email,
+            Password: "",
+            Uid: userRecord.uid,
+          });
+        });
+
+        res.send({ express: userList });
+      });
   } catch (err) {
     res.json({ message: err });
   }
