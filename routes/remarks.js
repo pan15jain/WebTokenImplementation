@@ -1,66 +1,51 @@
 const express = require("express");
-const model = require("../models/Remarks");
 const router = express.Router();
-var ObjectId = require("mongodb").ObjectId;
+const data = require("../Data/remarksdata");
 
 router.get("/", async (req, res) => {
   try {
     console.log("hello");
-    const fetchdata = await model.find();
+    const fetchdata = await data; //await model.find();
     res.json(fetchdata);
   } catch (err) {
     res.json({ message: err });
   }
 });
-
-router.get("/:caseid", async (req, res) => {
-  try {
-    console.log(req.params.caseid);
-    const fetchdata = await model.find({ caseid: ObjectId(req.params.caseid) });
-    //console.log(fetchdata);
-    res.json({ dateRecord: fetchdata });
-  } catch (err) {
-    res.json({ message: err });
-  }
-});
-
 router.post("/", async (req, res) => {
-  console.log(req.body);
-  const remarkModel = new model({
-    caseid: req.body.caseId,
-    remarkDate: req.body.remarkDate,
-    note: req.body.note,
-  });
   try {
-    const savedDate = await remarkModel.save();
-    console.log(savedDate);
-    res.json(savedDate);
+    const maxId = data.reduce(
+      (max, remark) => (remark.id > max ? remark.id : max),
+      data[0].id
+    );
+    const newid = maxId + 1;
+    data.push({
+      id: newid,
+      remarkDate: req.body.remarkDate,
+      note: req.body.note,
+    });
+    res.json(data);
   } catch (err) {
+    console.log(err);
     res.json({ message: err });
   }
 });
 
 router.patch("/:id", async (req, res) => {
   try {
-    const updateData = await model.findByIdAndUpdate(
-      { _id: req.params.id },
-      {
-        $set: {
-          caseid: req.body.caseId,
-          remarkDate: req.body.remarkDate,
-          note: req.body.note,
-        },
-      }
-    );
-    res.json(updateData);
+    const index = data.findIndex((x) => x.id === parseInt(req.params.id));
+    data[index].remarkDate = req.body.remarkDate;
+    data[index].note = req.body.note;
+    res.json(data);
   } catch (err) {
     res.json({ message: err });
   }
 });
 router.delete("/:id", async (req, res) => {
   try {
-    const deleteddata = await model.findByIdAndDelete(req.params.id);
-    res.json(deleteddata);
+    const dataafterdelete = data.filter(
+      (x) => x.id !== parseInt(req.params.id)
+    );
+    res.json(dataafterdelete);
   } catch (err) {
     res.json({ message: err });
   }
